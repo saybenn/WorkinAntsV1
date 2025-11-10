@@ -1,18 +1,17 @@
+// /hooks/useGeo.ts
 import { useEffect, useState } from 'react';
-type Geo = { lat: number; lng: number } | null;
 
-export function useGeo(ask = false) {
-  const [geo, setGeo] = useState<Geo>(null);
-  const [error, setError] = useState<string| null>(null);
-
+export function useGeo(ask: boolean) {
+  const [geo, setGeo] = useState<{ lat: number; lng: number } | null>(null);
   useEffect(() => {
-    if (!ask || !('geolocation' in navigator)) return;
+    if (!ask || !navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
-      p => setGeo({ lat: p.coords.latitude, lng: p.coords.longitude }),
-      err => setError(err.message),
+      (pos) => {
+        setGeo({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+      },
+      () => setGeo(null),
       { enableHighAccuracy: false, timeout: 8000 }
     );
   }, [ask]);
-
-  return { geo, error };
+  return { geo };
 }

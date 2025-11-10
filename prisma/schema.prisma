@@ -174,6 +174,16 @@ model Profile {
   orgMembers    OrgMember[]
   applications  Application[]
   skills        UserSkill[]
+    // --- DISCOVERY FIELDS ---
+  city        String?
+  state       String?
+  rating      Float?
+  ratingCount Int?     @map("rating_count")
+
+  @@index([isPublic])
+  @@index([city, state])
+  @@index([role])
+
 }
 
 /* =========================
@@ -808,4 +818,60 @@ model ProcessedStripeEvent {
   receivedAt DateTime @default(now()) @map("received_at")
 
   @@index([type, receivedAt])
+}
+
+model SearchDoc {
+  @@schema("app")
+  @@map("search_docs")
+
+  // Primary key mirrors your business object id (profile id, service id, job id, etc.)
+  id            String   @id
+
+  // Source bookkeeping
+  source        String                    // 'profile' | 'service' | 'job' | 'candidate' | 'organization' | 'taxonomy'
+  type          String                    // primary business type (e.g., 'provider' | 'service' | 'job' | 'candidate' | 'organization')
+  types         String[]   // additional hats if any (e.g., ['provider','candidate'])
+
+  // Display core
+  title         String?
+  description   String?
+  fullName      String?  @map("full_name")
+  handle        String?
+
+  // Taxonomy
+  category      String?                   // L1 slug
+  subcategory   String?                   // L2 slug
+  tags          String[]    // L3 slugs
+
+  // Facets / meta
+  isDigital     Boolean?  @map("is_digital")
+  priceMin      Int?      @map("price_min")
+  ratingVal     Float?    @map("rating")
+  ratingCount   Int?      @map("rating_count")
+  city          String?
+  state         String?
+
+  createdAt     DateTime? @map("created_at")
+
+  // Timestamps for sync sanity
+  syncedAt      DateTime  @default(now()) @map("synced_at")
+
+  @@index([type])
+  @@index([category, subcategory])
+  @@index([city, state])
+  @@index([priceMin])
+  @@index([ratingVal, ratingCount])
+}
+
+model SearchUpsertEvent {
+  @@schema("app")
+  @@map("search_upsert_events")
+
+  id        String   @id @default(uuid())
+  source    String                         // 'profile' | 'service' | 'job' | 'candidate' | 'organization'
+  entityId  String   @map("entity_id")
+  reason    String?                        // 'role_change' | 'edit' | 'backfill' | etc.
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([source, entityId, createdAt])
 }

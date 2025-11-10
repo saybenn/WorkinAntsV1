@@ -1,55 +1,49 @@
+// /pages/api/search/settings.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getAdminClient, getIndexName } from "@/lib/meili";
 
-/**
- * One-time configurator for your Meili index.
- * Call with: POST /api/search/settings
- */
+/** POST /api/search/settings — idempotent index settings */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
 
   try {
-    const client = getAdminClient(); // admin key
+    const client = getAdminClient();
     const index = client.index(getIndexName());
 
-    // 1) Make your filters work
     await index.updateSettings({
       filterableAttributes: [
-        "type",           // service | provider | job | candidate | organization
-        "category",       // L1 slug
-        "subcategory",    // L2 slug
-        "tags",           // L3 slugs array
+        "type",          // keep if your docs also carry a single 'type'
+        "types",         // <-- prefer this (array) in new docs
+        "category",
+        "subcategory",
+        "tags",
         "is_digital",
         "city",
         "state",
-        // numeric ranges you use:
         "price_min",
-        "rating"
+        "rating",
       ],
-      // 2) Allow sorts we actually use
       sortableAttributes: [
         "price_min",
         "rating",
         "rating_count",
-        "created_at"
+        "created_at",
       ],
-      // 3) What the search bar should look inside
       searchableAttributes: [
         "full_name",
         "title",
         "name",
         "handle",
         "description",
-        "tags"
+        "tags",
       ],
-      // Optional — defaults are fine; keeping them simple:
       rankingRules: [
         "words",
         "typo",
         "proximity",
         "attribute",
-        "exactness"
-      ]
+        "exactness",
+      ],
     });
 
     res.status(200).json({ ok: true, index: getIndexName() });

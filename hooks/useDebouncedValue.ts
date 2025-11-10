@@ -1,9 +1,11 @@
+// /hooks/useDebouncedValue.ts
 import { useEffect, useState } from 'react';
+
 export function useDebouncedValue<T>(value: T, delay = 300) {
-  const [debounced, setDebounced] = useState(value);
+  const [v, setV] = useState<T>(value);
   useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
+    const t = setTimeout(() => setV(value), delay);
+    return () => clearTimeout(t);
   }, [value, delay]);
-  return debounced;
+  return v;
 }
