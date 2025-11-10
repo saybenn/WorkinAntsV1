@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getMeiliClient, getIndexName } from '@/lib/meili';
+import { getSearchClient, getIndexName } from '@/lib/meili';
 
 type SortKey = 'best' | 'price_low_to_high' | 'rating' | 'newest';
 
@@ -51,7 +51,7 @@ function mapSort(sort: SortKey | undefined): string[] | undefined {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const client = getMeiliClient(true);
+    const client = getSearchClient();
     const index = client.index(getIndexName());
 
     const { q = '', page = '1', limit = '24', sort, lat, lng, radius } = req.query;

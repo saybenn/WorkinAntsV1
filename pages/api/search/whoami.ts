@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getMeiliClient, getIndexName } from '@/lib/meili';
+import { getAdminClient, getIndexName } from '@/lib/meili';
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -7,7 +7,7 @@ export default async function handler(_req: NextApiRequest, res: NextApiResponse
     const indexName = getIndexName();
 
     // Use ADMIN here so we can safely list indexes.
-    const adminClient = getMeiliClient(false);
+    const adminClient = getAdminClient();
     const indexes = await adminClient.getIndexes();
     const exists = indexes.results.some(i => i.uid === indexName);
 

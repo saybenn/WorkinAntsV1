@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getMeiliClient, getIndexName } from "@/lib/meili";
+import { getAdminClient, getIndexName } from "@/lib/meili";
 
 /**
  * One-time configurator for your Meili index.
@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== "POST") return res.status(405).end();
 
   try {
-    const client = getMeiliClient(false); // admin key
+    const client = getAdminClient(); // admin key
     const index = client.index(getIndexName());
 
     // 1) Make your filters work

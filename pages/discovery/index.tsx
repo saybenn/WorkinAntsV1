@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import DiscoveryHeader from "@/components/discovery/DiscoveryHeader";
 import FacetBarCompact from "@/components/discovery/FacetBarCompact";
-import BubbleGrid, { L1 } from "@/components/discovery/BubbleGrid";
-import SubcategoryPanel, { L2 } from "@/components/discovery/SubcategoryPanel";
-import TagCloud, { L3 } from "@/components/discovery/TagCloud";
+import BubbleGrid, { type L1 } from "@/components/discovery/BubbleGrid";
+import SubcategoryPanel, {
+  type L2,
+} from "@/components/discovery/SubcategoryPanel";
+import TagCloud, { type L3 } from "@/components/discovery/TagCloud";
 import ResultRail from "@/components/discovery/ResultRail";
 
 declare global {

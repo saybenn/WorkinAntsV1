@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getMeiliClient, getIndexName } from '@/lib/meili';
+import { getSearchClient, getIndexName } from '@/lib/meili';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (error) throw error;
 
-    const client = getMeiliClient(false);
+    const client = getSearchClient();
     const idx = client.index(getIndexName());
     const { taskUid } = await idx.updateDocuments(services, { primaryKey: 'id' });
     res.status(200).json({ ok: true, taskUid, count: services?.length || 0 });
