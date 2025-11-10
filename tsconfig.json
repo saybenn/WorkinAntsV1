@@ -29,5 +29,8 @@
     "allowJs": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.mts"],
-  "exclude": ["node_modules"]
-}
+ "exclude": [
+    "node_modules",
+    ".next",
+    "supabase/functions/**"   // ⬅️ add this line
+  ]}
