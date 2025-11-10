@@ -1,0 +1,811 @@
+// prisma/schema.prisma
+// Canonical Prisma client for local/dev/admin tooling.
+// In Supabase prod, we apply SQL (this repo holds the source-of-truth SQL).
+// Prisma can safely read/write with a restricted service key for admin jobs.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // Use a safe connection (local or restricted)
+    schemas  = ["public", "app"]
+
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+/* =========================
+   Enums (names mapped to DB enums)
+   ========================= */
+
+enum Role {
+  client
+  provider
+  candidate
+  admin
+
+@@schema("app")
+
+  @@map("user_role")
+}
+
+enum ServiceType {
+  digital
+  in_person
+  @@schema("app")
+
+}
+
+enum OrderStatus {
+  draft
+  awaiting_provider
+  accepted
+  delivered
+  completed
+  refunded
+  cancelled
+  @@schema("app")
+
+}
+
+enum FileRole {
+  client
+  provider
+  @@schema("app")
+
+}
+
+enum BookingStatus {
+  requested
+  confirmed
+  completed
+  cancelled
+  @@schema("app")
+
+}
+
+enum DisputeStatus {
+  open
+  resolved_refund
+  resolved_release
+  dismissed
+  @@schema("app")
+
+}
+
+enum Plan {
+  free
+  elite
+  @@schema("app")
+
+}
+
+enum SubscriptionStatus {
+  active
+  canceled
+  incomplete
+  @@schema("app")
+
+}
+
+// Independent of work status
+enum RefundStatus {
+  none
+  requested
+  partial
+  refunded
+  @@schema("app")
+
+}
+
+enum OrgRole {
+  owner
+  admin
+  recruiter
+  viewer
+  @@schema("app")
+
+}
+
+enum JobVisibility {
+  public
+  private
+  @@schema("app")
+
+}
+
+enum EmploymentType {
+  full_time
+  part_time
+  contract
+  freelance
+  internship
+  @@schema("app")
+
+}
+
+enum ApplicationStatus {
+  submitted
+  viewed
+  withdrawn
+  rejected
+  accepted_offer
+  @@schema("app")
+
+}
+
+enum ApplicationStage {
+  new_
+  screen
+  interview
+  offer
+  hired
+  @@schema("app")
+
+}
+
+/* =========================
+   Identity & Profiles
+   ========================= */
+
+model Profile {
+  @@schema("app")
+  @@map("profiles")
+
+  id         String    @id @db.Uuid()
+  handle     String?   @unique
+  fullName   String?   @map("full_name")
+  avatarUrl  String?   @map("avatar_url")
+  role       Role      @default(client)
+  roleSet    Role[]    @map("role_set")                   // array of Role (user_role[])
+  purpose    String?
+  bio        String?
+  location   String?
+  isPublic   Boolean   @default(true) @map("is_public")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @default(now()) @map("updated_at")
+
+  // Relations
+  providers   Provider[]
+  candidate   CandidateProfile?
+  messagesFrom Message[]  @relation("MessageFrom")
+  messagesTo   Message[]  @relation("MessageTo")
+  notifications Notification[]
+  orgMembers    OrgMember[]
+  applications  Application[]
+  skills        UserSkill[]
+}
+
+/* =========================
+   Taxonomy (3 levels)
+   ========================= */
+
+model TaxonomyDomain {
+  @@schema("app")
+  @@map("taxonomy_domains")
+
+  id           String             @id @default(uuid())
+  name         String             @unique
+  slug         String             @unique
+  displayOrder Int?               @map("display_order")
+
+  categories   TaxonomyCategory[]
+}
+
+model TaxonomyCategory {
+  @@schema("app")
+  @@map("taxonomy_categories")
+
+  id           String        @id @default(uuid())
+  domainId     String        @map("domain_id")
+    domain       TaxonomyDomain   @relation(fields: [domainId], references: [id])
+
+  name         String
+  slug         String
+  description  String?
+  icon         String?
+  displayOrder Int?          @map("display_order")
+
+  tags   TaxonomyTag[]
+  services     ProviderService[] @relation("ServiceCategory")
+
+  @@unique([domainId, name])
+}
+
+model TaxonomyTag {
+  @@schema("app")
+  @@map("taxonomy_tags")
+
+  id           String            @id @default(uuid())
+  categoryId   String            @map("category_id")
+  name         String
+  slug         String
+  displayOrder Int?              @map("display_order")
+
+  category     TaxonomyCategory  @relation(fields: [categoryId], references: [id])
+
+  providerTags ProviderTag[]
+  serviceTags  ServiceTag[]
+  userSkills   UserSkill[]
+  jobTags      JobTag[]
+
+  @@unique([categoryId, name])
+}
+
+/* =========================
+   Provider & Listings
+   ========================= */
+
+model Provider {
+  @@schema("app")
+  @@map("providers")
+
+  id                   String     @id @default(uuid())
+  profileId            String?    @map("profile_id")
+  profile              Profile?   @relation(fields: [profileId], references: [id])
+  slug                 String     @unique
+  displayName          String     @map("display_name")
+  tagline              String?
+  bio                  String?
+  rating               Float?
+  city                 String?
+  state                String?
+  country              String?
+  isApproved           Boolean    @default(false) @map("is_approved")
+  createdAt            DateTime   @default(now()) @map("created_at")
+
+  // Stripe Connect
+  stripeAccountId      String?    @map("stripe_account_id")
+  stripeReady          Boolean    @default(false) @map("stripe_ready")
+  onboardingCompleteAt DateTime?  @map("onboarding_complete_at")
+  defaultCurrency      String?    @map("default_currency")
+
+  // Relations
+  services      ProviderService[]
+  orders        Order[]                  @relation("ProviderOrders")
+  availability  ProviderAvailability[]
+  reviews       Review[]                 @relation("ProviderReviews")
+  tags          ProviderTag[]
+  rank          ProviderRank?
+  calendars     ProviderCalendarAccount[]
+  busy          ProviderBusyWindow[]
+  subscriptions Subscription[]
+  metrics       ProviderMetricsDaily[]
+
+  @@index([isApproved])
+  @@index([city, state, country])
+  @@index([stripeAccountId])
+}
+
+model ProviderService {
+  @@schema("app")
+  @@map("provider_services")
+
+  id               String            @id @default(uuid())
+  providerId       String            @map("provider_id")
+  categoryId       String?           @map("category_id")
+  provider         Provider          @relation(fields: [providerId], references: [id])
+  category   TaxonomyCategory?  @relation("ServiceCategory", fields: [categoryId], references: [id])
+
+  slug             String
+  title            String
+  type             ServiceType
+  description      String?
+  priceFrom        Int?              @map("price_from")
+  durationMinutes  Int?              @map("duration_minutes")
+  leadTimeDays     Int?              @map("lead_time_days")
+  imageUrl         String?           @map("image_url")
+  isActive         Boolean           @default(true) @map("is_active")
+  bookingBufferMin Int?              @default(15) @map("booking_buffer_min")
+  createdAt        DateTime          @default(now()) @map("created_at")
+
+  orders           Order[]
+  tags             ServiceTag[]
+
+  @@unique([providerId, slug])
+  @@index([type, isActive])
+}
+
+model ProviderAvailability {
+  @@schema("app")
+  @@map("provider_availability")
+
+  id         String   @id @default(uuid())
+  providerId String   @map("provider_id")
+  provider   Provider @relation(fields: [providerId], references: [id])
+
+  // 0 = Sunday, 6 = Saturday
+  weekday    Int
+  // store as "HH:MM" 24-hr strings for simplicity (we convert to Date when needed)
+  startTime  String   @map("start_time")
+  endTime    String   @map("end_time")
+
+  @@unique([providerId, weekday, startTime, endTime])
+  @@index([weekday])
+}
+
+/* =========================
+   Orders (unified) & Bookings
+   ========================= */
+
+model Order {
+  @@schema("app")
+  @@map("orders")
+
+  id            String          @id @default(uuid())
+  type          ServiceType
+
+  clientId      String?         @map("client_id")
+  providerId    String          @map("provider_id")
+  serviceId     String          @map("service_id")
+  provider      Provider        @relation("ProviderOrders", fields: [providerId], references: [id])
+  service       ProviderService @relation(fields: [serviceId], references: [id])
+
+  status        OrderStatus     @default(draft)
+  brief         Json?
+  priceCents    Int?            @map("price_cents")
+  currency      String          @default("usd")
+
+  // Stripe rails
+  stripePaymentIntentId String?  @map("stripe_payment_intent_id")
+  applicationFeeCents   Int?     @map("application_fee_cents")
+  stripeTransferId      String?  @map("stripe_transfer_id")
+  paidAt       DateTime?         @map("paid_at")
+  acceptedAt   DateTime?         @map("accepted_at")
+  deliveredAt  DateTime?         @map("delivered_at")
+  approvedAt   DateTime?         @map("approved_at")
+  completedAt  DateTime?         @map("completed_at")
+  eta          DateTime?
+  stripeCheckoutId String?       @map("stripe_checkout_id")
+
+  // Refund lifecycle
+  refundStatus RefundStatus      @default(none) @map("refund_status")
+
+  // Delivery metadata
+  deliveryNote      String?      @map("delivery_note")
+  revisionCount     Int          @default(0) @map("revision_count")
+  approvalErrorCode String?      @map("approval_error_code")
+  approvalErrorAt   DateTime?    @map("approval_error_at")
+  autoCompleted     Boolean?     @map("auto_completed")
+
+  files      OrderFile[]
+  events     OrderEvent[]
+  booking    Booking?
+  review     Review?
+  dispute    Dispute?
+  agreement  Agreement?
+
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt      @map("updated_at")
+
+  @@index([type, status])
+  @@index([providerId, serviceId])
+  @@index([stripePaymentIntentId])
+  @@index([stripeTransferId])
+}
+
+model OrderFile {
+  @@schema("app")
+  @@map("order_files")
+
+  id        String   @id @default(uuid())
+  orderId   String   @map("order_id")
+  order     Order    @relation(fields: [orderId], references: [id])
+  role      FileRole
+  fileUrl   String   @map("file_url")
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([orderId, role])
+}
+
+enum OrderEventActor {
+  system
+  webhook
+  provider
+  client
+  admin
+  @@schema("app")
+
+}
+
+model OrderEvent {
+  @@schema("app")
+  @@map("order_events")
+
+  id         String           @id @default(uuid())
+  orderId    String           @map("order_id")
+  order      Order            @relation(fields: [orderId], references: [id])
+  actor      OrderEventActor
+  actorId    String?          @map("actor_id")
+  fromStatus OrderStatus?     @map("from_status")
+  toStatus   OrderStatus?     @map("to_status")
+  name       String
+  reason     String?
+  data       Json?
+  createdAt  DateTime         @default(now()) @map("created_at")
+
+  @@index([orderId, createdAt])
+}
+
+model Booking {
+  @@schema("app")
+  @@map("bookings")
+
+  id             String         @id @default(uuid())
+  orderId        String?        @unique @map("order_id")
+  order          Order?         @relation(fields: [orderId], references: [id])
+
+  clientId       String?        @map("client_id")
+  providerId     String?        @map("provider_id")
+  serviceId      String?        @map("service_id")
+
+  status         BookingStatus  @default(requested)
+  requestedAt    DateTime       @default(now()) @map("requested_at")
+  confirmedAt    DateTime?      @map("confirmed_at")
+  scheduledStart DateTime?      @map("scheduled_start")
+  scheduledEnd   DateTime?      @map("scheduled_end")
+  note           String?
+
+  @@index([status])
+  @@index([scheduledStart, scheduledEnd])
+  @@index([clientId])
+  @@index([providerId])
+  @@index([serviceId])
+}
+
+/* =========================
+   Reviews
+   ========================= */
+
+model Review {
+  @@schema("app")
+  @@map("reviews")
+
+  id         String   @id @default(uuid())
+  orderId    String   @unique @map("order_id")
+  order      Order    @relation(fields: [orderId], references: [id])
+  clientId   String?  @map("client_id")
+  providerId String   @map("provider_id")
+  provider   Provider @relation("ProviderReviews", fields: [providerId], references: [id])
+  stars      Int
+  comment    String?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([providerId, stars])
+}
+
+/* =========================
+   Messaging
+   ========================= */
+
+model Message {
+  @@schema("app")
+  @@map("messages")
+
+  id        String   @id @default(uuid())
+  threadId  String   @map("thread_id") // e.g., "order:ord_123"
+  fromId    String?  @map("from_id")
+  toId      String?  @map("to_id")
+  from      Profile? @relation("MessageFrom", fields: [fromId], references: [id])
+  to        Profile? @relation("MessageTo", fields: [toId], references: [id])
+  content   String
+  files     Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([threadId, createdAt])
+}
+
+/* =========================
+   Disputes, Subscriptions, Agreements
+   ========================= */
+
+model Dispute {
+  @@schema("app")
+  @@map("disputes")
+
+  id         String        @id @default(uuid())
+  orderId    String        @unique @map("order_id")
+  order      Order         @relation(fields: [orderId], references: [id])
+  openedById String?       @map("opened_by_id")
+  reason     String
+  status     DisputeStatus @default(open)
+  adminNotes String?       @map("admin_notes")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  resolvedAt DateTime?     @map("resolved_at")
+}
+
+model Subscription {
+  @@schema("app")
+  @@map("subscriptions")
+
+  id                   String             @id @default(uuid())
+  providerId           String             @map("provider_id")
+  provider             Provider           @relation(fields: [providerId], references: [id])
+  plan                 Plan               @default(free)
+  status               SubscriptionStatus @default(incomplete)
+  stripeCustomerId     String?            @map("stripe_customer_id")
+  stripeSubscriptionId String?            @map("stripe_subscription_id")
+  currentPeriodEnd     DateTime?          @map("current_period_end")
+
+  @@index([providerId, status])
+}
+
+model Agreement {
+  @@schema("app")
+  @@map("agreements")
+
+  id             String   @id @default(uuid())
+  orderId        String   @unique @map("order_id")
+  order          Order    @relation(fields: [orderId], references: [id])
+  templateId     String   @map("template_id")
+  clientSigUrl   String?  @map("client_sig_url")
+  providerSigUrl String?  @map("provider_sig_url")
+  pdfUrl         String?  @map("pdf_url")
+  createdAt      DateTime @default(now()) @map("created_at")
+}
+
+/* =========================
+   Tagging (services, users, jobs)
+   ========================= */
+
+model ProviderTag {
+  @@schema("app")
+  @@map("provider_tags")
+
+  providerId String
+  tagId      String   @map("tag_id")
+  provider   Provider     @relation(fields: [providerId], references: [id])
+  tag        TaxonomyTag  @relation(fields: [tagId], references: [id])
+
+  @@id([providerId, tagId])
+}
+
+model ServiceTag {
+  @@schema("app")
+  @@map("service_tags")
+
+  providerServiceId String   @map("provider_service_id")
+  tagId             String   @map("tag_id")
+  service           ProviderService @relation(fields: [providerServiceId], references: [id])
+  tag               TaxonomyTag     @relation(fields: [tagId], references: [id])
+
+  @@id([providerServiceId, tagId])
+}
+
+model UserSkill {
+  @@schema("app")
+  @@map("user_skills")
+
+  userId          String
+  tagId           String   @map("tag_id")
+  confidenceLevel Int      @default(3) @map("confidence_level")
+  verified        Boolean  @default(false)
+
+  user            Profile     @relation(fields: [userId], references: [id])
+  tag             TaxonomyTag @relation(fields: [tagId], references: [id])
+
+  @@id([userId, tagId]) // a row = "raised flag"
+  @@index([tagId])
+}
+
+/* =========================
+   Candidate Profile
+   ========================= */
+
+model CandidateProfile {
+  @@schema("app")
+  @@map("candidate_profiles")
+
+  userId       String  @id @map("user_id")
+  user         Profile @relation(fields: [userId], references: [id])
+  headline     String?
+  resumeUrl    String? @map("resume_url")
+  portfolioUrl String? @map("portfolio_url")
+  availability String?
+  visibility   Boolean @default(true)
+  city         String?
+  state        String?
+  country      String?
+
+  @@index([visibility, country, state, city])
+}
+
+/* =========================
+   Organizations & Hiring
+   ========================= */
+
+model Org {
+  @@schema("app")
+  @@map("orgs")
+
+  id           String   @id @default(uuid())
+  slug         String   @unique
+  name         String
+  description  String?
+  logoUrl      String?  @map("logo_url")
+  industry     String?
+  locations    String[] @default([])
+  passcodeHash String?  @map("passcode_hash")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  members OrgMember[]
+  jobs    Job[]
+}
+
+model OrgMember {
+  @@schema("app")
+  @@map("org_members")
+
+  orgId  String   @map("org_id")
+  userId String   @map("user_id")
+  role   OrgRole  @default(recruiter)
+
+  org    Org      @relation(fields: [orgId], references: [id])
+  user   Profile  @relation(fields: [userId], references: [id])
+
+  @@id([orgId, userId])
+  @@index([userId, role])
+}
+
+model Job {
+  @@schema("app")
+  @@map("jobs")
+
+  id             String         @id @default(uuid())
+  orgId          String         @map("org_id")
+  org            Org            @relation(fields: [orgId], references: [id])
+  title          String
+  description    String
+  categorySlug   String?        @map("category_slug")
+  visibility     JobVisibility  @default(public)
+  employmentType EmploymentType @map("employment_type")
+  location       String?
+  remoteOk       Boolean        @default(false) @map("remote_ok")
+  status         String         @default("open")
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt      @map("updated_at")
+
+  applications Application[]
+  tags         JobTag[]
+
+  @@index([orgId, visibility, status])
+  @@index([employmentType, location])
+}
+
+model JobTag {
+  @@schema("app")
+  @@map("job_tags")
+
+  jobId String @map("job_id")
+  tagId String @map("tag_id")
+
+  job   Job         @relation(fields: [jobId], references: [id])
+  tag   TaxonomyTag @relation(fields: [tagId], references: [id])
+
+  @@id([jobId, tagId])
+}
+
+model Application {
+  @@schema("app")
+  @@map("applications")
+
+  id          String            @id @default(uuid())
+  jobId       String            @map("job_id")
+  candidateId String            @map("candidate_id")
+  job         Job               @relation(fields: [jobId], references: [id])
+  candidate   Profile           @relation(fields: [candidateId], references: [id])
+  resumeUrl   String?           @map("resume_url")
+  answers     Json?
+  invited     Boolean           @default(false)
+
+  status      ApplicationStatus @default(submitted)
+  stage       ApplicationStage  @default(new_)
+  submittedAt DateTime          @default(now()) @map("submitted_at")
+  viewedAt    DateTime?         @map("viewed_at")
+  interviewAt DateTime?         @map("interview_at")
+  offerAt     DateTime?         @map("offer_at")
+  hiredAt     DateTime?         @map("hired_at")
+  rejectedAt  DateTime?         @map("rejected_at")
+  withdrawnAt DateTime?         @map("withdrawn_at")
+
+  threadId    String?           @map("thread_id")
+
+  @@index([jobId, status, stage])
+  @@index([candidateId, status])
+}
+
+/* =========================
+   Ranking & Scheduling
+   ========================= */
+
+model ProviderMetricsDaily {
+  @@schema("app")
+  @@map("provider_metrics_daily")
+
+  providerId     String
+  day            DateTime
+  bookingsCount  Int      @default(0) @map("bookings_count")
+  completedCount Int      @default(0) @map("completed_count")
+  avgReview      Float?   @map("avg_review")
+  responseMs     Int?     @map("response_ms")
+  revenueCents   Int      @default(0) @map("revenue_cents")
+  xpDelta        Int      @default(0) @map("xp_delta")
+  provider       Provider @relation(fields: [providerId], references: [id])
+
+  @@id([providerId, day])
+}
+
+model ProviderRank {
+  @@schema("app")
+  @@map("provider_ranks")
+
+  providerId String   @id @map("provider_id")
+  provider   Provider @relation(fields: [providerId], references: [id])
+  tier       String   @default("New")
+  score      Float    @default(0)
+  xpTotal    Int      @default(0) @map("xp_total")
+  badges     String[] @default([])
+  updatedAt  DateTime @default(now()) @map("updated_at")
+}
+
+model ProviderCalendarAccount {
+  @@schema("app")
+  @@map("provider_calendar_accounts")
+
+  id           String   @id @default(uuid())
+  providerId   String   @map("provider_id")
+  provider     Provider @relation(fields: [providerId], references: [id])
+  providerName String   @map("provider_name")
+  oauthJson    Json     @map("oauth_json")
+  status       String   @default("active")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([providerId, providerName])
+}
+
+model ProviderBusyWindow {
+  @@schema("app")
+  @@map("provider_busy_windows")
+
+  id         String   @id @default(uuid())
+  providerId String   @map("provider_id")
+  provider   Provider @relation(fields: [providerId], references: [id])
+  source     String
+  startAt    DateTime @map("start_at")
+  endAt      DateTime @map("end_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([providerId, startAt, endAt])
+}
+
+/* =========================
+   Events / Notifications / Webhooks
+   ========================= */
+
+model Notification {
+  @@schema("app")
+  @@map("notifications")
+
+  id        String   @id @default(uuid())
+  profileId String?  @map("profile_id")
+  channel   String
+  name      String
+  payload   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  profile   Profile? @relation(fields: [profileId], references: [id])
+
+  @@index([profileId, channel, name])
+}
+
+model ProcessedStripeEvent {
+  @@schema("app")
+  @@map("processed_stripe_events")
+
+  eventId    String   @id @map("event_id")
+  type       String
+  receivedAt DateTime @default(now()) @map("received_at")
+
+  @@index([type, receivedAt])
+}

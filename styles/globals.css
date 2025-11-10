@@ -1,26 +1,72 @@
+/* styles/globals.css */
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* import our token + component layers AFTER tailwind so they apply cleanly */
+@import "./tokens.css";
+@import "./components.css";
+
+html,
+body,
+#__next {
+  height: 100%;
+}
+body {
+  background: var(--bg-950);
+  color: var(--ink-900);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.h1 {
+  font-size: var(--size-4xl);
+  line-height: var(--leading-tight);
+  color: var(--ink-900);
+  font-weight: 700;
+}
+.h2 {
+  font-size: var(--size-3xl);
+  line-height: var(--leading-tight);
+  color: var(--ink-900);
+  font-weight: 700;
+}
+.subhead {
+  font-size: var(--size-lg);
+  line-height: var(--leading-normal);
+  color: var(--ink-700);
+}
+.eyebrow {
+  font-size: var(--size-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-400);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+.btn-pill {
+  padding: 0.6rem 1rem;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--glass-ring);
+  font-weight: 600;
+}
+.btn-primary {
+  background: var(--blue-500);
+  color: var(--ink-900);
+}
+.btn-quiet {
+  background: var(--blue-800);
+  color: var(--ink-900);
+}
+.card-dark {
+  background: var(--card-800);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadein 0.25s ease forwards;
+}
+
+@keyframes fadein {
+  to {
+    opacity: 1;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}

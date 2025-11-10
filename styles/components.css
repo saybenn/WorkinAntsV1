@@ -1,0 +1,148 @@
+/* /styles/components.css */
+@layer components {
+  /* ---------- Typography ---------- */
+  .h1 {
+    font-family: var(--font-head);
+    font-size: var(--size-3xl);
+    line-height: var(--leading-tight);
+    font-weight: 700;
+    color: var(--ink-900);
+  }
+  .h2 {
+    font-family: var(--font-head);
+    font-size: var(--size-2xl);
+    line-height: var(--leading-tight);
+    font-weight: 650;
+    color: var(--ink-900);
+  }
+  .subhead {
+    font-size: var(--size-lg);
+    line-height: var(--leading-normal);
+    color: var(--ink-700);
+  }
+  .eyebrow {
+    font-size: var(--size-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-400);
+  }
+  .caption {
+    font-size: var(--size-xs);
+    line-height: var(--leading-relaxed);
+    color: var(--muted-400);
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    padding: 0.6rem 1rem;
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+    transition: transform var(--dur-2) var(--ease-out),
+      background var(--dur-2) var(--ease-out),
+      color var(--dur-2) var(--ease-out),
+      border-color var(--dur-2) var(--ease-out);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .btn:hover {
+      transform: scale(1.015);
+    }
+    .btn:active {
+      transform: scale(0.985);
+    }
+  }
+  .btn-primary {
+    color: #fff;
+    background: var(--blue-600);
+  }
+  .btn-primary:hover {
+    background: var(--blue-500);
+  }
+
+  .btn-secondary {
+    color: var(--ink-900);
+    background: var(--white);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover {
+    background: #f8fafc;
+  }
+
+  .btn-success {
+    color: #fff;
+    background: var(--green-500);
+  }
+  .btn-ghost {
+    color: var(--ink-900);
+    background: transparent;
+  }
+
+  /* ---------- Surfaces ---------- */
+  .section {
+    width: 100%;
+    background: var(--bg-cream);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-card);
+    padding: var(--space-16) 0;
+  }
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-soft);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .card:hover {
+    transform: translateY(-1px);
+  }
+
+  .glass {
+    background: color-mix(in oklab, var(--white) 70%, transparent);
+    backdrop-filter: blur(10px) saturate(115%);
+    -webkit-backdrop-filter: blur(10px) saturate(115%);
+    border: 1px solid color-mix(in oklab, #000 6%, transparent);
+    box-shadow: 0 8px 30px rgb(0 0 0 / 0.06);
+  }
+
+  /* ---------- Aspect helpers ---------- */
+  .hero-16x9 {
+    aspect-ratio: 16 / 9;
+  }
+  .hero-21x9 {
+    aspect-ratio: 21 / 9;
+  }
+  .hero-4x3 {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* ---------- Animations ---------- */
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fadeUp {
+    animation: fadeUp var(--dur-3) var(--ease-out) both;
+  }
+
+  /* ---------- Header solid-on-scroll (optional) ---------- */
+  .nav-is-solid {
+    background: color-mix(in oklab, var(--white) 92%, transparent);
+    backdrop-filter: saturate(120%) blur(6px);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid
+      color-mix(in oklab, var(--muted-400) 25%, transparent);
+  }
+}

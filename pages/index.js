@@ -1,78 +1,108 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
+import { site as siteStatic } from "../lib/siteConfig";
+import Hero from "../components/home/Hero";
+import ExplainerSplit from "../components/home/ExplainerSplit";
+import FeaturedTabs from "../components/home/FeaturedTabs";
+import InPersonGrid from "../components/home/InPersonGrid";
+import FAQSwitch from "../components/home/FAQSwitch";
+import { SEO, getMeta, websiteJsonLd } from "../lib/seo";
+import categories from "../data/categories.json";
+import services from "../data/services.json";
+/**
+ * Home
+ * - Reads data from /data/*.json; swap to Supabase later by replacing imports with fetchers.
+ * - No service-specific strings baked into components; copy comes from data or props here.
+ */
 export default function Home() {
+  const meta = getMeta({
+    title: siteStatic?.meta?.title,
+    description: siteStatic?.meta?.description,
+    url: siteStatic?.meta?.url,
+  });
+
+  const jsonLd = [
+    websiteJsonLd({
+      name: siteStatic.brand,
+      url: siteStatic?.meta?.url,
+    }),
+  ];
+  // Featured tabs derived from categories + services
+  const makeTab = (cat) => ({
+    id: cat.id,
+    label: cat.name,
+    items: services.filter((s) => s.category_id === cat.id && s.featured),
+  });
+
+  const tabs = categories.map(makeTab);
+
+  const inPersonItems = services
+    .filter((s) => s.type === "in_person")
+    .slice(0, 6);
+  const faqData = {
+    customers: [
+      {
+        q: "How are payments handled for packages?",
+        a: "Digital packages use a secure checkout. In-person requests do not require payment in the initial request.",
+      },
+      {
+        q: "Can I choose a specific provider?",
+        a: "Yes. You select a provider first, then choose one of their services.",
+      },
+    ],
+    freelancers: [
+      {
+        q: "How do I get listed?",
+        a: "Complete your profile and at least one active service, then submit for approval.",
+      },
+      {
+        q: "Can I set my own schedule?",
+        a: "Yes. Add weekly availability windows and update them anytime.",
+      },
+    ],
+  };
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.js file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <SEO meta={meta} jsonLd={jsonLd} />
+
+      <Hero
+        subhead={siteStatic?.tagline}
+        onSearch={({ q, mode }) => {
+          // v0: simple redirect with params. Later: /search?q=&type=
+          if (typeof window !== "undefined") {
+            const params = new URLSearchParams();
+            if (q) params.set("q", q);
+            if (mode) params.set("type", mode);
+            window.location.href = `/search?${params.toString()}`;
+          }
+        }}
+      />
+
+      <ExplainerSplit heading="Two systems, one place" />
+
+      <FeaturedTabs
+        heading="Featured"
+        tabs={tabs}
+        onCta={(item) => {
+          // In real app, route to provider/service detail.
+          // Here we just no-op or log. Replace with Next router when detail pages exist.
+          if (typeof window !== "undefined") {
+            console.log("Featured view", item);
+          }
+        }}
+      />
+
+      <InPersonGrid
+        heading="In-person highlights"
+        items={inPersonItems}
+        onView={(it) => {
+          if (typeof window !== "undefined") {
+            console.log("In-person view", it);
+          }
+        }}
+      />
+
+      <FAQSwitch heading="Questions" tabs={faqData} />
+    </>
   );
 }
+

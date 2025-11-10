@@ -1,0 +1,113 @@
+{
+  "categories": [
+    {
+      "slug": "health-wellness",
+      "name": "Health & Wellness",
+      "subcategories": [
+        { "slug": "massage-therapy", "name": "Massage Therapy" },
+        { "slug": "personal-training", "name": "Personal Training" },
+        { "slug": "nutrition-coaching", "name": "Nutrition Coaching" },
+        { "slug": "mental-health-coaching", "name": "Mental Health Coaching" }
+      ]
+    },
+    {
+      "slug": "beauty-grooming",
+      "name": "Beauty & Grooming",
+      "subcategories": [
+        { "slug": "hair-styling", "name": "Hair Styling" },
+        { "slug": "nail-care", "name": "Nail Care" },
+        { "slug": "makeup-artistry", "name": "Makeup Artistry" },
+        { "slug": "skin-care", "name": "Skin Care" },
+        { "slug": "barber-services", "name": "Barber Services" }
+      ]
+    },
+    {
+      "slug": "home-services",
+      "name": "Home Services",
+      "subcategories": [
+        { "slug": "power-washing", "name": "Power Washing" },
+        { "slug": "plumbing", "name": "Plumbing" },
+        { "slug": "electrical", "name": "Electrical" },
+        { "slug": "painting", "name": "Painting" },
+        { "slug": "flooring", "name": "Flooring" },
+        { "slug": "hvac", "name": "HVAC" },
+        { "slug": "landscaping", "name": "Landscaping" },
+        { "slug": "roofing", "name": "Roofing" }
+      ]
+    },
+    {
+      "slug": "creative-design",
+      "name": "Creative & Design",
+      "subcategories": [
+        { "slug": "logo-branding", "name": "Logo & Branding" },
+        { "slug": "graphic-design", "name": "Graphic Design" },
+        { "slug": "ui-ux", "name": "UI/UX" },
+        { "slug": "illustration", "name": "Illustration" },
+        { "slug": "video-editing", "name": "Video Editing" },
+        { "slug": "photography", "name": "Photography" }
+      ]
+    },
+    {
+      "slug": "software-it",
+      "name": "Software & IT",
+      "subcategories": [
+        { "slug": "web-development", "name": "Web Development" },
+        { "slug": "mobile-development", "name": "Mobile Development" },
+        { "slug": "devops", "name": "DevOps" },
+        { "slug": "data-engineering", "name": "Data Engineering" },
+        { "slug": "it-support", "name": "IT Support" },
+        { "slug": "security", "name": "Security" }
+      ]
+    },
+    {
+      "slug": "marketing",
+      "name": "Marketing",
+      "subcategories": [
+        { "slug": "seo", "name": "SEO" },
+        { "slug": "paid-ads", "name": "Paid Ads" },
+        { "slug": "social-media", "name": "Social Media" },
+        { "slug": "email-marketing", "name": "Email Marketing" },
+        { "slug": "content-marketing", "name": "Content Marketing" }
+      ]
+    },
+    {
+      "slug": "writing-translation",
+      "name": "Writing & Translation",
+      "subcategories": [
+        { "slug": "copywriting", "name": "Copywriting" },
+        { "slug": "technical-writing", "name": "Technical Writing" },
+        { "slug": "translation", "name": "Translation" },
+        { "slug": "editing-proofreading", "name": "Editing & Proofreading" }
+      ]
+    },
+    {
+      "slug": "education-coaching",
+      "name": "Education & Coaching",
+      "subcategories": [
+        { "slug": "tutoring", "name": "Tutoring" },
+        { "slug": "career-coaching", "name": "Career Coaching" },
+        { "slug": "business-coaching", "name": "Business Coaching" },
+        { "slug": "language-lessons", "name": "Language Lessons" }
+      ]
+    },
+    {
+      "slug": "events-entertainment",
+      "name": "Events & Entertainment",
+      "subcategories": [
+        { "slug": "dj-services", "name": "DJ Services" },
+        { "slug": "event-photography", "name": "Event Photography" },
+        { "slug": "catering", "name": "Catering" },
+        { "slug": "event-staff", "name": "Event Staff" }
+      ]
+    },
+    {
+      "slug": "food-service",
+      "name": "Food Service",
+      "subcategories": [
+        { "slug": "kitchen-staff", "name": "Kitchen Staff" },
+        { "slug": "beverage-service", "name": "Beverage Service" },
+        { "slug": "management", "name": "Management" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+/* styles/tokens.css — Wellvix/Working Ants brand env */
+:root {
+  /* Surfaces */
+  --bg-950: #06142e; /* deep navy */
+  --bg-900: #0a1e44; /* slightly lighter */
+  --bg-ivory: #f3f8faff; /* neutral ivory for light cards when needed */
+  --card-900: #0c2147; /* darker card panel */
+  --card-800: #102a4c;
+  --overlay-700: rgba(8, 25, 53, 0.7); /* for media overlays */
+
+  /* Ink */
+  --ink-900: #ffffff; /* main text on dark */
+  --ink-700: rgba(180, 176, 176, 0.8);
+  --ink-500: rgba(79, 32, 160, 1);
+  --muted-400: rgba(255, 255, 255, 0.4);
+
+  /* Brand blues + accent */
+  --blue-800: #113b74; /* navigation strips / heavy UI */
+  --blue-600: #1c73e8; /* primary WorkinAnts blue */
+  --blue-500: #29a0ff; /* accent blue */
+  --aqua-300: #7dd3fc; /* glow highlight */
+  --green-500: #35d07f; /* trust/CTA */
+
+  /* Borders / lines */
+  --border: rgba(255, 255, 255, 0.15);
+  --border-strong: rgba(255, 255, 255, 0.28);
+  --shadow-soft: 0 6px 24px rgba(0, 0, 0, 0.3);
+
+  /* Radii */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+
+  /* Blur + glass */
+  --glass-bg: rgba(16, 48, 98, 0.42);
+  --glass-ring: rgba(255, 255, 255, 0.36);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  /* Type scale */
+  --size-xs: 12px;
+  --size-sm: 14px;
+  --size-base: 16px;
+  --size-lg: 18px;
+  --size-xl: 22px;
+  --size-2xl: 28px;
+  --size-3xl: 36px;
+  --size-4xl: 48px;
+
+  /* Line heights */
+  --leading-normal: 1.5;
+  --leading-tight: 1.25;
+
+  /* Gradients */
+  --grad-hero: linear-gradient(
+    180deg,
+    rgba(8, 25, 53, 0) 0%,
+    rgba(8, 25, 53, 0.65) 85%
+  );
+  --grad-rail: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08),
+    rgba(255, 255, 255, 0)
+  );
+}
