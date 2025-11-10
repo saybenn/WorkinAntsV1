@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import DiscoveryHeader from "@/components/discovery/DiscoveryHeader";
+import DiscoveryHeader from "@/components/discovery/Discoveryheader";
 import FacetBarCompact from "@/components/discovery/FacetBarCompact";
 import BubbleGrid, { type L1 } from "@/components/discovery/BubbleGrid";
 import SubcategoryPanel, {
