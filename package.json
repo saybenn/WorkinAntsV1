@@ -15,7 +15,7 @@
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.555.0",
     "meilisearch": "^0.53.0",
-    "next": "16.0.0",
+    "next": "16.0.10",
     "prisma": "^7.1.0",
     "react": "19.2.0",
     "react-dom": "19.2.0"
