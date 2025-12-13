@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { dt } from "@/lib/format";
-import StarRating from "@/components/ui/StarRating";
+import { StarRating } from "@/components/ui/StarRating";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
