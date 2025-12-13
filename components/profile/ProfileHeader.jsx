@@ -1,6 +1,6 @@
 // /components/profile/ProfileHeader.jsx
 import { dt } from "@/lib/format";
-import StarRating from "@/components/ui/StarRating";
+import { StarRating } from "@/components/ui/StarRating";
 import Link from "next/link";
 
 export default function ProfileHeader({
