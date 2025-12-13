@@ -85,9 +85,6 @@ export function TestimonialCard({ testimonial }: Props) {
 
             <div className="sm:text-right">
               <StarRating value={testimonial.rating} />
-              <p className="mt-1 text-xs text-[var(--ink-700)]">
-                {testimonial.rating.toFixed(1)}
-              </p>
             </div>
           </div>
 
