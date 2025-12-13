@@ -1,5 +1,5 @@
 // components/ModeSwitcherSection.tsx
-import type { ComponentType } from "react";
+import type { ElementType } from "react";
 import { ShoppingCart, Briefcase, Building2, Target } from "lucide-react";
 
 export default function ModeSwitcherSection() {
@@ -13,9 +13,8 @@ export default function ModeSwitcherSection() {
             md:flex-row md:items-stretch md:px-10 md:py-12
           "
         >
-          {/* Decorative gradient / waves */}
           <div
-            aria-hidden="true"
+            aria-hidden
             className="
               pointer-events-none absolute inset-0 rounded-3xl
               bg-[radial-gradient(circle_at_top_left,#0b4b89_0,transparent_55%)]
@@ -23,9 +22,7 @@ export default function ModeSwitcherSection() {
             "
           />
 
-          {/* Content wrapper */}
           <div className="relative z-10 flex w-full flex-col gap-10 md:flex-row">
-            {/* Left column: copy */}
             <div className="md:w-1/2 lg:w-[55%]">
               <h2 className="text-balance text-2xl font-semibold leading-tight sm:text-3xl lg:text-4xl">
                 Did you know you can jump between modes while browsing for
@@ -38,7 +35,6 @@ export default function ModeSwitcherSection() {
               </p>
             </div>
 
-            {/* Right column: mode grid container */}
             <div
               className="
                 md:w-1/2 lg:w-[45%]
@@ -78,7 +74,7 @@ export default function ModeSwitcherSection() {
 type ModeCardProps = {
   title: string;
   description: string;
-  Icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
+  Icon: ElementType;
 };
 
 function ModeCard({ title, description, Icon }: ModeCardProps) {
@@ -90,14 +86,14 @@ function ModeCard({ title, description, Icon }: ModeCardProps) {
       "
     >
       <div className="flex items-start gap-3">
-        {/* Square 1:1 icon */}
         <div
           className="
             flex h-10 w-10 items-center justify-center rounded-xl
             border border-white/10 bg-white/10
           "
         >
-          <Icon className="h-5 w-5 text-white/90" aria-hidden="true" />
+          {/* IMPORTANT: aria-hidden must be boolean in your TS config */}
+          <Icon className="h-5 w-5 text-white/90" aria-hidden={true} />
         </div>
 
         <div>
