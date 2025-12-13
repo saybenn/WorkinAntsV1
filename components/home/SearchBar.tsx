@@ -168,7 +168,7 @@ export default function SearchBar({
                   onCategoryChange?.(kind);
                 }}
                 className={[
-                  "rounded-full px-3 py-2 text-xs font-medium transition text-gray-300 hover:cursor-pointer",
+                  "rounded-full px-3 py-2 text-xs font-medium transition text-gray-300 hover:cursor-pointer bg-[#0b4b89]",
                   isActive
                     ? "bg-ink-900 text-white"
                     : "bg-muted-50 text-ink-800 hover:bg-muted-100",
