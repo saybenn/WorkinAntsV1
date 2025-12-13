@@ -16,21 +16,21 @@ const TRUST_CARDS: TrustCard[] = [
     topLabel: "✔ Mandatory Background Checks | Licensed Professionals",
     title: "Verified & Safe",
     body: "Your safety comes first. Every in-person service provider completes a mandatory background check, and all licensed professionals are verified for proper credentials and compliance with state and local regulations.",
-    imageUrl: "/images/verified-safe.jpg",
+    imageUrl: "/images/verified-safe.JPG",
   },
   {
     id: "quality",
     topLabel: "★ Quality You Can Trust | Transparent Pricing",
     title: "Quality & Transparency",
     body: "We continuously monitor professional performance through your reviews and ratings. You’ll always know exactly what you’re paying for — no surprise fees, no hidden add-ons, just clear, upfront pricing every time.",
-    imageUrl: "/images/quality-transparency.jpg",
+    imageUrl: "/images/quality-transparency.JPG",
   },
   {
     id: "communication",
     topLabel: "💬 Clear Communication | Secure Payments",
     title: "Reliable Communication & Secure Payments",
     body: "Stay informed with instant messaging and real-time updates at every step. Your funds are held securely until the work is approved, ensuring a worry-free payment experience for every project.",
-    imageUrl: "/images/reliable-secure.jpg",
+    imageUrl: "/images/reliable-secure.JPG",
   },
 ];
 
