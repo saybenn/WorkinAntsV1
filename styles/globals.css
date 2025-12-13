@@ -4,6 +4,9 @@
 /* import our token + component layers AFTER tailwind so they apply cleanly */
 @import "./tokens.css";
 @import "./components.css";
+:root {
+  --fill: -webkit-fill-available;
+}
 
 html,
 body,
@@ -67,6 +70,17 @@ body {
 @keyframes fadein {
   to {
     opacity: 1;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
   }
 }
 

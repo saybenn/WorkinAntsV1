@@ -3,6 +3,7 @@ import EmptyState from "@/components/ui/EmptyState";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { money } from "@/lib/format";
+import Link from "next/link";
 
 export default function ClientBilling() {
   const [rows, setRows] = useState([]);
@@ -32,9 +33,9 @@ export default function ClientBilling() {
           title="Stripe portal coming soon"
           subtitle="Update payment methods and view invoices."
           action={
-            <a className="underline" href="#">
+            <Link className="underline" href="#">
               Open portal
-            </a>
+            </Link>
           }
         />
       </Card>

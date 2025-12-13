@@ -1,9 +1,13 @@
 // components/layout/Layout.jsx
 import Head from "next/head";
+import { useRouter } from "next/router";
 import Header from "./Header";
 import Footer from "./Footer";
 
 export default function Layout({ title = "Wellvix", children }) {
+  const router = useRouter();
+  const isHome = router.pathname === "/";
+
   return (
     <>
       <Head>
@@ -16,9 +20,9 @@ export default function Layout({ title = "Wellvix", children }) {
         />
       </Head>
 
-      <Header />
-      {/* Spacer so content isn't hidden under fixed header */}
-      <div className="h-16" />
+      {/* Only show global header on non-home pages */}
+      {!isHome && <Header />}
+      {!isHome && <div className="h-16" />}
 
       <main>{children}</main>
 

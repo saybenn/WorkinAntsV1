@@ -1,8 +1,7 @@
-// components/layout/Header.jsx
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-export default function Header() {
+export default function Header({ variant = "overlay" }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -12,14 +11,15 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const overlayActive = variant === "overlay" && !scrolled;
+
   return (
     <header
       className={[
-        "fixed inset-x-0 top-0 z-40 transition-all",
-        "border-b",
-        scrolled
-          ? "backdrop-blur bg-[(--glass-900-80)] border-black/10"
-          : "bg-transparent border-transparent",
+        "fixed inset-x-0 top-0 z-40 border-b transition-all",
+        overlayActive
+          ? "bg-transparent border-transparent"
+          : "backdrop-blur bg-[(--glass-900-80)] border-black/10",
       ].join(" ")}
     >
       <div className="container-px mx-auto flex h-16 items-center justify-between">
@@ -27,10 +27,10 @@ export default function Header() {
           href="/"
           className="font-semibold tracking-tight text-[(--ink-900)]"
         >
-          {process.env.NEXT_PUBLIC_APP_NAME || "Wellvix"}
+          {process.env.NEXT_PUBLIC_APP_NAME || "WorkinAnts"}
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden items-center gap-6 md:flex">
           <Link href="/services" className="hover:opacity-80">
             Services
           </Link>
@@ -46,7 +46,7 @@ export default function Header() {
         </nav>
 
         <div className="md:hidden">
-          {/* keep minimal for now; add a menu later */}
+          {/* minimal for now; can become a real menu later */}
           <span className="text-sm text-[(--muted-400)]">Menu</span>
         </div>
       </div>

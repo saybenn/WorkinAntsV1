@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { money, dt } from "@/lib/format";
 import EmptyState from "@/components/ui/EmptyState";
+import Link from "next/link";
 
 export default function ClientOverview() {
   const [orders, setOrders] = useState([]);
@@ -54,9 +55,9 @@ export default function ClientOverview() {
             title="Nothing in progress"
             subtitle="Browse providers to get started."
             action={
-              <a className="underline" href="/search?type=services">
+              <Link className="underline" href="/search?type=services">
                 Find providers
-              </a>
+              </Link>
             }
           />
         ) : (

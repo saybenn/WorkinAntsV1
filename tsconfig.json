@@ -2,22 +2,30 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
     "moduleResolution": "Node",
     "baseUrl": ".",
-    "paths": { "@/*": ["./*"] },
-
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
     "jsx": "react-jsx",
-    "plugins": [{ "name": "next" }],
-
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "noEmit": true,
     "incremental": true,
     "skipLibCheck": true,
-
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
-
     "strict": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
@@ -25,12 +33,18 @@
     "useUnknownInCatchVariables": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-
     "allowJs": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.mts"],
- "exclude": [
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.mts",
+    "pages/api/search/reindex.js"
+, "lib/seo.js"  ],
+  "exclude": [
     "node_modules",
     ".next",
-    "supabase/functions/**"   // ⬅️ add this line
-  ]}
+    "supabase/functions/**" // ⬅️ add this line
+  ]
+}

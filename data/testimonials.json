@@ -1,0 +1,32 @@
+[
+  {
+    "id": "t1",
+    "name": "Vanessa Richardson",
+    "roleLabel": "Service Customer",
+    "rating": 5.0,
+    "headline": "Amazing opportunities",
+    "body": "This was an amazing idea — you come in thinking you need a service and leave with both service booked and the ability to make money using my own skills and passion.",
+    "avatarUrl": "/images/vanessa.png",
+    "kind": "service"
+  },
+  {
+    "id": "t2",
+    "name": "Ben Carter",
+    "roleLabel": "Product Buyer",
+    "rating": 4.9,
+    "headline": "Super smooth experience",
+    "body": "I found exactly what I needed fast. Clear pricing, easy checkout, and the product was ready instantly. It felt trustworthy end-to-end.",
+    "avatarUrl": "/images/testimonials/ben.jpg",
+    "kind": "product"
+  },
+  {
+    "id": "t3",
+    "name": "Ava Morales",
+    "roleLabel": "Course Learner",
+    "rating": 5.0,
+    "headline": "Learning that actually clicks",
+    "body": "The course was structured, clear, and practical. I wasn’t overwhelmed — I was guided. Huge value for the time I put in.",
+    "avatarUrl": "/images/testimonials/ava.jpg",
+    "kind": "course"
+  }
+]

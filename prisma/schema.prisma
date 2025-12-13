@@ -5,7 +5,6 @@
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // Use a safe connection (local or restricted)
     schemas  = ["public", "app"]
 
 }
@@ -34,6 +33,13 @@ enum ServiceType {
   in_person
   @@schema("app")
 
+}
+enum OfferingKind {
+  service       // default; current behavior
+  course        // structured learning
+  product       // e-book, template, download
+  bundle        // optional future-proofing
+  @@schema("app")   // if you want it in app schema like the others
 }
 
 enum OrderStatus {
@@ -300,6 +306,8 @@ model ProviderService {
   slug             String
   title            String
   type             ServiceType
+    kind   OfferingKind @default(service) // new: wrapper color
+
   description      String?
   priceFrom        Int?              @map("price_from")
   durationMinutes  Int?              @map("duration_minutes")
@@ -314,6 +322,7 @@ model ProviderService {
 
   @@unique([providerId, slug])
   @@index([type, isActive])
+  @@index([kind, isActive])
 }
 
 model ProviderAvailability {
