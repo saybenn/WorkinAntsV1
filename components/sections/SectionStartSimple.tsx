@@ -83,7 +83,7 @@ export function SectionStartSimple({
               text-sm text-neutral-900 placeholder:text-neutral-400
             "
             buttonClassName="
-              text-xs font-medium rounded-full bg-[#0b4b89] hover:bg-neutral-800
+              text-xs font-medium rounded-full hover:bg-neutral-800
             "
             iconClassName="text-neutral-500"
             onSubmit={(query, category) => {

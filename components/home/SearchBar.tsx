@@ -168,10 +168,10 @@ export default function SearchBar({
                   onCategoryChange?.(kind);
                 }}
                 className={[
-                  "rounded-full px-3 py-2 text-xs font-medium transition border",
+                  "rounded-full px-3 py-2 text-xs font-medium transition text-gray-300 hover:cursor-pointer",
                   isActive
-                    ? "border-ink-900 bg-ink-900 text-white"
-                    : "border-muted-300 bg-white text-ink-800 hover:bg-muted-50",
+                    ? "bg-ink-900 text-white"
+                    : "bg-muted-50 text-ink-800 hover:bg-muted-100",
                 ].join(" ")}
               >
                 {label}
