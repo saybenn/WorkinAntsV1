@@ -76,14 +76,14 @@ export function SectionStartSimple({
               courses: "Courses",
             }}
             containerClassName="
-              rounded-full border border-neutral-200 bg-white/90
+              rounded-full border border-neutral-200 bg-[#0b4b89]/90
               shadow-sm shadow-black/5
             "
             inputClassName="
               text-sm text-neutral-900 placeholder:text-neutral-400
             "
             buttonClassName="
-              text-xs font-medium rounded-full bg-neutral-900 hover:bg-neutral-800
+              text-xs font-medium rounded-full bg-[#0b4b89] hover:bg-neutral-800
             "
             iconClassName="text-neutral-500"
             onSubmit={(query, category) => {
