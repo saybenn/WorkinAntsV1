@@ -31,6 +31,35 @@ type Payload = {
   tagsByCategory: Record<string, Tag[]>;
 };
 
+type CsvRow = Record<string, string | undefined>;
+
+function withOpt<T extends object, K extends string, V>(
+  key: K,
+  value: V | undefined
+): T | (T & Record<K, V>) {
+  return value === undefined ? ({} as T) : ({ [key]: value } as any);
+}
+function slugify(s: string | undefined) {
+  return (s ?? "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s\-_]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
+function sanitizeSlug(s: string | undefined) {
+  const v = (s ?? "").toLowerCase().trim();
+  return /^[a-z0-9\-_]+$/.test(v) ? v : "";
+}
+
+
+
+function toNum(v: any) {
+  const n = Number.parseInt(String(v ?? ""), 10);
+  return Number.isFinite(n) ? n : undefined;
+}
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     // Expect these CSV files to exist in your repo under /data (recommended)
@@ -39,61 +68,78 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const categoriesCsv = readCsv("taxonomy_categories_rows (1).csv");
     const tagsCsv = readCsv("taxonomy_tags_rows (1).csv");
 
-    const domainsRaw = parseCsv(domainsCsv);
-    const categoriesRaw = parseCsv(categoriesCsv);
-    const tagsRaw = parseCsv(tagsCsv);
+const domainsRaw: CsvRow[] = parseCsv(domainsCsv);
+const categoriesRaw: CsvRow[] = parseCsv(categoriesCsv);
+const tagsRaw: CsvRow[] = parseCsv(tagsCsv);
 
-    // Normalize domains
-    const domains: Domain[] = domainsRaw.map((r) => ({
+
+// Normalize domains
+const domains: Domain[] = domainsRaw
+  .map((r) => {
+    const display_order = toNum(r.display_order ?? r.order ?? r.rank);
+
+    return {
       id: r.id ?? r.domain_id ?? r.uuid ?? r._id ?? "",
       name: r.name ?? r.domain ?? "",
       slug: r.slug ?? slugify(r.name ?? r.domain ?? ""),
-      display_order: toNum(r.display_order ?? r.order ?? r.rank),
-    })).filter((d) => d.id && d.slug && d.name);
+      ...(display_order !== undefined ? { display_order } : {}),
+    } satisfies Domain;
+  })
+  .filter((d) => d.id && d.slug && d.name);
 
     const domainById = new Map(domains.map((d) => [d.id, d]));
     const domainBySlug = new Map(domains.map((d) => [d.slug, d]));
 
     // Normalize categories
-    const categories: Category[] = categoriesRaw.map((r) => {
-      const domain_id = r.domain_id ?? r.domainId ?? "";
-      const domain_slug =
-        r.domain_slug ??
-        r.domainSlug ??
-        (domainById.get(domain_id)?.slug ?? sanitizeSlug(r.domain ?? ""));
+const categories: Category[] = categoriesRaw
+  .map((r) => {
+    const icon = r.icon ?? undefined;
+    const description = r.description ?? undefined;
+    const display_order = toNum(r.display_order ?? r.order ?? r.rank);
 
-      return {
-        id: r.id ?? r.category_id ?? r.uuid ?? "",
-        name: r.name ?? r.category ?? "",
-        slug: r.slug ?? slugify(r.name ?? r.category ?? ""),
-        domain_id,
-        domain_slug,
-        icon: r.icon ?? r.icon_name ?? undefined,
-        description: r.description ?? undefined,
-        display_order: toNum(r.display_order ?? r.order ?? r.rank),
-      };
-    }).filter((c) => c.id && c.slug && c.name && c.domain_slug);
+    const name = r.name ?? r.category ?? "";
+    const slug = r.slug ?? slugify(name);
+
+    const domain_slug = r.domain_slug ?? slugify(r.domain ?? "");
+
+    return {
+      id: r.id ?? r.category_id ?? r.uuid ?? r._id ?? "",
+      name,
+      slug,
+      domain_id: r.domain_id ?? r.domain_uuid ?? "",
+      domain_slug,
+      ...(icon ? { icon } : {}),
+      ...(description ? { description } : {}),
+      ...(display_order !== undefined ? { display_order } : {}),
+    } satisfies Category;
+  })
+  .filter((c) => c.id && c.name && c.slug && c.domain_id);
+
 
     const categoryById = new Map(categories.map((c) => [c.id, c]));
     const categoryBySlug = new Map(categories.map((c) => [c.slug, c]));
 
     // Normalize tags
-    const tags: Tag[] = tagsRaw.map((r) => {
-      const category_id = r.category_id ?? r.categoryId ?? "";
-      const category_slug =
-        r.category_slug ??
-        r.categorySlug ??
-        (categoryById.get(category_id)?.slug ?? sanitizeSlug(r.category ?? ""));
+const tags: Tag[] = tagsRaw
+  .map((r) => {
+    const display_order = toNum(r.display_order ?? r.order ?? r.rank);
 
-      return {
-        id: r.id ?? r.tag_id ?? r.uuid ?? "",
-        name: r.name ?? r.tag ?? "",
-        slug: r.slug ?? slugify(r.name ?? r.tag ?? ""),
-        category_id,
-        category_slug,
-        display_order: toNum(r.display_order ?? r.order ?? r.rank),
-      };
-    }).filter((t) => t.id && t.slug && t.name && t.category_slug);
+    const name = r.name ?? r.tag ?? "";
+    const slug = r.slug ?? slugify(name);
+
+    const category_slug = r.category_slug ?? slugify(r.category ?? "");
+
+    return {
+      id: r.id ?? r.tag_id ?? r.uuid ?? r._id ?? "",
+      name,
+      slug,
+      category_id: r.category_id ?? r.category_uuid ?? "",
+      category_slug,
+      ...(display_order !== undefined ? { display_order } : {}),
+    } satisfies Tag;
+  })
+  .filter((t) => t.id && t.name && t.slug && t.category_id);
+
 
     // Build maps
     const categoriesByDomain: Record<string, Category[]> = {};
@@ -101,7 +147,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       (categoriesByDomain[c.domain_slug] ??= []).push(c);
     }
     for (const k of Object.keys(categoriesByDomain)) {
-      categoriesByDomain[k].sort((a, b) => (a.display_order ?? 9999) - (b.display_order ?? 9999));
+      categoriesByDomain[k]?.sort((a, b) => (a.display_order ?? 9999) - (b.display_order ?? 9999));
     }
 
     const tagsByCategory: Record<string, Tag[]> = {};
@@ -109,7 +155,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       (tagsByCategory[t.category_slug] ??= []).push(t);
     }
     for (const k of Object.keys(tagsByCategory)) {
-      tagsByCategory[k].sort((a, b) => (a.display_order ?? 9999) - (b.display_order ?? 9999));
+      tagsByCategory[k]?.sort((a, b) => (a.display_order ?? 9999) - (b.display_order ?? 9999));
     }
 
     const payload: Payload = {
@@ -134,19 +180,33 @@ function readCsv(filename: string) {
 }
 
 // Very small CSV parser (handles commas + quotes)
-function parseCsv(csv: string): Record<string, string>[] {
-  const lines = csv.split(/\r?\n/).filter(Boolean);
-  if (!lines.length) return [];
-  const headers = splitCsvLine(lines[0]).map((h) => h.trim());
-  const rows: Record<string, string>[] = [];
+function parseCsv(csv: string): CsvRow[] {
+  const lines = csv.split(/\r?\n/).filter((l) => l.trim().length > 0);
+  if (lines.length === 0) return [];
+
+  // ✅ Tell TypeScript: this exists because lines.length > 0
+  const headerLine = lines[0]!;
+  const headers = splitCsvLine(headerLine).map((h) => h.trim());
+
+  const rows: CsvRow[] = [];
+
   for (let i = 1; i < lines.length; i++) {
-    const cols = splitCsvLine(lines[i]);
-    const row: Record<string, string> = {};
-    headers.forEach((h, idx) => (row[h] = (cols[idx] ?? "").trim()));
+    // ✅ Tell TypeScript: this exists because i < lines.length
+    const line = lines[i]!;
+    const cols = splitCsvLine(line);
+
+    const row: CsvRow = {};
+    headers.forEach((h, idx) => {
+      const raw = cols[idx];
+      row[h] = raw === undefined ? undefined : raw.trim();
+    });
+
     rows.push(row);
   }
+
   return rows;
 }
+
 
 function splitCsvLine(line: string) {
   const out: string[] = [];
@@ -174,21 +234,4 @@ function splitCsvLine(line: string) {
   return out;
 }
 
-function slugify(s: string) {
-  return s
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s\-_]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-}
 
-function sanitizeSlug(s: string) {
-  const v = (s || "").toLowerCase().trim();
-  return /^[a-z0-9\-_]+$/.test(v) ? v : "";
-}
-
-function toNum(v: any) {
-  const n = Number.parseInt(String(v ?? ""), 10);
-  return Number.isFinite(n) ? n : undefined;
-}
