@@ -1,6 +1,7 @@
 // components/layout/Footer.tsx
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { cn } from "../../lib/cn";
 
 type FooterAudience =
   | "Clients"
@@ -37,10 +38,10 @@ function FooterAccordionColumn({ col }: { col: FooterColumn }) {
       >
         <span className="text-sm font-semibold text-white/90">{col.title}</span>
         <span
-          className={[
+          className={cn(
             "text-white/70 transition-transform",
-            open ? "rotate-180" : "rotate-0",
-          ].join(" ")}
+            open ? "rotate-180" : "rotate-0"
+          )}
           aria-hidden="true"
         >
           ▾
@@ -141,18 +142,16 @@ export default function Footer({
   );
 
   return (
-    <footer
-      className={["bg-ink-950 px-4 pb-10 pt-16 sm:pt-20", className].join(" ")}
-    >
+    <footer className={cn("bg-ink-950 px-4 pb-10 pt-16 sm:pt-20", className)}>
       <div className="mx-auto max-w-6xl">
         <div
-          className="
-            rounded-[28px]
-            border border-white/15
-            bg-white/10
-            shadow-[0_40px_120px_rgba(0,0,0,0.35)]
-            backdrop-blur-xl
-          "
+          className={cn(
+            "rounded-[28px]",
+            "border border-white/15",
+            "bg-white/10",
+            "shadow-[0_40px_120px_rgba(0,0,0,0.35)]",
+            "backdrop-blur-xl"
+          )}
         >
           {/* Top mission */}
           <div className="px-6 pt-10 text-center sm:px-10 sm:pt-12">
@@ -227,20 +226,22 @@ export default function Footer({
                     id="footer-email"
                     type="email"
                     placeholder="you@example.com"
-                    className="
-                      h-11 w-full rounded-xl border border-white/15
-                      bg-white/10 px-4 text-sm text-white
-                      placeholder:text-white/50
-                      outline-none focus:border-white/25
-                    "
+                    className={cn(
+                      "h-11 w-full rounded-xl",
+                      "border border-white/15",
+                      "bg-white/10 px-4 text-sm text-white",
+                      "placeholder:text-white/50",
+                      "outline-none focus:border-white/25"
+                    )}
                   />
                   <button
                     type="submit"
-                    className="
-                      h-11 flex-shrink-0 rounded-xl bg-black text-ink-950
-                      px-4 text-sm font-semibold
-                      hover:bg-white/30 transition hover:cursor-pointer
-                    "
+                    className={cn(
+                      "h-11 flex-shrink-0 rounded-xl",
+                      "bg-black text-ink-950",
+                      "px-4 text-sm font-semibold",
+                      "hover:bg-white/30 transition hover:cursor-pointer"
+                    )}
                   >
                     Subscribe
                   </button>
@@ -299,20 +300,22 @@ export default function Footer({
                   id="footer-email-mobile"
                   type="email"
                   placeholder="you@example.com"
-                  className="
-                    h-11 w-full rounded-xl border border-white/15
-                    bg-white/10 px-4 text-sm text-white
-                    placeholder:text-white/50
-                    outline-none focus:border-white/25
-                  "
+                  className={cn(
+                    "h-11 w-full rounded-xl",
+                    "border border-white/15",
+                    "bg-white/10 px-4 text-sm text-white",
+                    "placeholder:text-white/50",
+                    "outline-none focus:border-white/25"
+                  )}
                 />
                 <button
                   type="submit"
-                  className="
-                    h-11 flex-shrink-0 rounded-xl bg-black text-ink-950
-                    px-4 text-sm font-semibold
-                    hover:bg-white/30 transition
-                  "
+                  className={cn(
+                    "h-11 flex-shrink-0 rounded-xl",
+                    "bg-black text-ink-950",
+                    "px-4 text-sm font-semibold",
+                    "hover:bg-white/30 transition"
+                  )}
                 >
                   Go
                 </button>

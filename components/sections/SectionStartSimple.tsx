@@ -1,7 +1,7 @@
 // components/sections/SectionStartSimple.tsx
 import Link from "next/link";
 import Image from "next/image";
-import SearchBar from "@/components/home/SearchBar";
+import SearchBar from "@/components/shared/SearchBar";
 
 type CategoryIdStrict = "services" | "products" | "courses";
 
