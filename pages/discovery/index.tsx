@@ -90,7 +90,15 @@ export default function DiscoveryPage() {
     const sort = sanitizeSort(sortRaw);
     const page = sanitizePage(pageRaw);
 
-    return { q, scope, domain, category, tags, sort, page };
+    return {
+      q,
+      scope,
+      ...(domain ? { domain } : {}),
+      ...(category ? { category } : {}),
+      tags,
+      sort,
+      page,
+    };
   }, [router.query]);
 
   // ---------- Taxonomy lookups ----------
@@ -137,7 +145,19 @@ export default function DiscoveryPage() {
       tagSlugs = tagSlugs.filter((s) => allowed.has(s)).slice(0, MAX_TAGS);
     }
 
-    return { ...parsed, domain, category, tags: tagSlugs };
+    const base: SearchParams = {
+      q: parsed.q,
+      scope: parsed.scope,
+      tags: tagSlugs,
+      sort: parsed.sort,
+      page: parsed.page,
+    };
+
+    return {
+      ...base,
+      ...(domain ? { domain } : {}),
+      ...(category ? { category } : {}),
+    };
   }, [parsed, domains, categories, tags]);
 
   // If normalization changed something, sync URL (no crash, deterministic)
@@ -170,10 +190,12 @@ export default function DiscoveryPage() {
 
       try {
         // DISC-006: adapter (mock now, swap later)
-        const res = await searchAdapter.search({
+        const res = (await searchAdapter.search({
           ...normalizedParams,
           pageSize: PAGE_SIZE,
-        });
+        })) as SearchResponse;
+
+        setData(res);
 
         if (cancelled) return;
         setData(res);
@@ -202,39 +224,60 @@ export default function DiscoveryPage() {
     };
   }, [router.isReady, normalizedParams]);
 
-  // ---------- Handlers: filters update URL ----------
-  const setParams = (patch: Partial<SearchParams>) => {
-    const nextParams: SearchParams = {
-      ...normalizedParams,
-      ...patch,
-      // whenever filters change, reset page
+  type SearchPatch = Partial<Omit<SearchParams, "domain" | "category">> & {
+    domain?: string | null;
+    category?: string | null;
+  };
+
+  const setParams = (patch: SearchPatch) => {
+    const nextBase: SearchParams = {
+      q: normalizedParams.q,
+      scope: normalizedParams.scope,
+      tags: normalizedParams.tags,
+      sort: normalizedParams.sort,
       page: patch.page ?? 1,
+      ...(normalizedParams.domain ? { domain: normalizedParams.domain } : {}),
+      ...(normalizedParams.category
+        ? { category: normalizedParams.category }
+        : {}),
     };
 
-    // If domain changes, clear category/tags unless still valid
-    if (patch.domain !== undefined) {
-      nextParams.category = undefined;
-      nextParams.tags = [];
+    if (patch.q !== undefined) nextBase.q = patch.q;
+    if (patch.scope !== undefined) nextBase.scope = patch.scope;
+    if (patch.tags !== undefined) nextBase.tags = patch.tags;
+    if (patch.sort !== undefined) nextBase.sort = patch.sort;
+
+    // domain/category special: null means "clear"
+    if (patch.domain === null) {
+      // clear domain + cascade
+      delete (nextBase as any).domain;
+      delete (nextBase as any).category;
+      nextBase.tags = [];
+    } else if (typeof patch.domain === "string") {
+      (nextBase as any).domain = patch.domain;
+      delete (nextBase as any).category;
+      nextBase.tags = [];
     }
-    if (patch.category !== undefined) {
-      nextParams.tags = [];
-      // ensure domain matches category
+
+    if (patch.category === null) {
+      delete (nextBase as any).category;
+      nextBase.tags = [];
+    } else if (typeof patch.category === "string") {
+      (nextBase as any).category = patch.category;
+      nextBase.tags = [];
       const cat = categories.find((c) => c.slug === patch.category);
-      if (cat) nextParams.domain = cat.domain_slug;
+      if (cat) (nextBase as any).domain = cat.domain_slug;
     }
 
     router.push(
-      { pathname: "/discovery", query: toQuery(nextParams) },
+      { pathname: "/discovery", query: toQuery(nextBase) },
       undefined,
       {
         shallow: true,
       }
     );
 
-    // DISC-007: filter change
-    track("filter_change", {
-      patch: Object.keys(patch),
-    });
+    track("filter_change", { patch: Object.keys(patch) });
   };
 
   // ---------- SEO basics (DISC-008 scaffolding) ----------
@@ -307,7 +350,9 @@ export default function DiscoveryPage() {
                     value: d.slug,
                     label: d.name,
                   }))}
-                  onChange={(v) => setParams({ domain: v || undefined })}
+                  onChange={(v) =>
+                    setParams(v ? { domain: v } : { domain: "" as any })
+                  }
                 />
               </FilterGroup>
 
@@ -324,7 +369,9 @@ export default function DiscoveryPage() {
                     value: c.slug,
                     label: c.name,
                   }))}
-                  onChange={(v) => setParams({ category: v || undefined })}
+                  onChange={(v) =>
+                    setParams(v ? { category: v } : { category: null })
+                  }
                 />
               </FilterGroup>
 
@@ -375,8 +422,8 @@ export default function DiscoveryPage() {
                   onClear={() =>
                     setParams({
                       q: "",
-                      domain: undefined,
-                      category: undefined,
+                      domain: null,
+                      category: null,
                       tags: [],
                       page: 1,
                     })
@@ -816,12 +863,10 @@ function sanitizePage(p: string): number {
   if (!Number.isFinite(n) || n < 1) return 1;
   return Math.min(n, 500);
 }
-
 function sanitizeSlug(s: string) {
   const v = s.trim().toLowerCase();
-  if (!v) return undefined;
-  // allow a-z0-9-_
-  if (!/^[a-z0-9\-_]+$/.test(v)) return undefined;
+  if (!v) return "";
+  if (!/^[a-z0-9\-_]+$/.test(v)) return "";
   return v;
 }
 
