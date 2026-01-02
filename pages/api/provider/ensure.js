@@ -1,5 +1,5 @@
 // /pages/api/provider/ensure.js
-import { supabaseServerClient } from "@/lib/supabase/admin";
+import { supabaseServerClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/session";
 
 export default async function handler(req, res) {

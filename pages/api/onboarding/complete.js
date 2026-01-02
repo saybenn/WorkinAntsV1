@@ -1,5 +1,5 @@
 // /pages/api/onboarding/complete.js
-import { supabaseServerClient } from "@/lib/supabase/admin";
+import { supabaseServerClient } from "@/lib/supabase/server";
 
 /**
  * Truth mode:

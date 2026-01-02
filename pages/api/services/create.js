@@ -1,5 +1,5 @@
 // /pages/api/services/create.js
-import { supabaseServerClient } from "@/lib/supabase/admin";
+import { supabaseServerClient } from "@/lib/supabase/server";
 import { getSessionUser } from "@/lib/session";
 
 function slugify(s = "") {
