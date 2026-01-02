@@ -1,13 +1,9 @@
 // components/layout/Layout.jsx
 import Head from "next/head";
-import { useRouter } from "next/router";
 import Header from "./Header";
 import Footer from "./Footer";
 
-export default function Layout({ title = "Wellvix", children }) {
-  const router = useRouter();
-  const isHome = router.pathname === "/";
-
+export default function Layout({ title = "Workin Ants", children }) {
   return (
     <>
       <Head>
@@ -19,13 +15,9 @@ export default function Layout({ title = "Wellvix", children }) {
           content="Provider-first marketplace for services."
         />
       </Head>
-
       {/* Only show global header on non-home pages */}
-      {!isHome && <Header />}
-      {!isHome && <div className="h-16" />}
-
+      <Header /> <div className="h-16"></div>
       <main>{children}</main>
-
       <Footer />
     </>
   );

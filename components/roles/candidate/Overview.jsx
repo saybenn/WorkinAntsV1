@@ -1,7 +1,7 @@
 // components/roles/candidate/Overview.jsx
 import Card from "@/components/ui/Card";
 import EmptyState from "@/components/ui/EmptyState";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 
 export default function CandidateOverview() {

@@ -1,5 +1,5 @@
 // components/roles/client/Bookings.jsx
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { dt } from "@/lib/format";
 import EmptyState from "@/components/ui/EmptyState";

@@ -1,6 +1,6 @@
 // components/roles/client/Overview.jsx
 import Card from "@/components/ui/Card";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import { money, dt } from "@/lib/format";
 import EmptyState from "@/components/ui/EmptyState";

@@ -1,14 +1,17 @@
+// lib/supabase/server.ts
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { GetServerSidePropsContext } from "next";
 
 export function supabaseServerClient(ctx: GetServerSidePropsContext) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    throw new Error(
+      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY"
+    );
   }
-  
+
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name: string) {
@@ -18,13 +21,20 @@ export function supabaseServerClient(ctx: GetServerSidePropsContext) {
         ctx.res.setHeader("Set-Cookie", serializeCookie(name, value, options));
       },
       remove(name: string, options: CookieOptions) {
-        ctx.res.setHeader("Set-Cookie", serializeCookie(name, "", { ...options, maxAge: 0 }));
+        ctx.res.setHeader(
+          "Set-Cookie",
+          serializeCookie(name, "", { ...options, maxAge: 0 })
+        );
       },
     },
   });
 }
 
-// Minimal cookie serializer (no dependency). You can swap to `cookie` package if preferred.
+// Helper: scope any server client to the `app` schema when doing DB calls
+export function appServerDb(client: ReturnType<typeof supabaseServerClient>) {
+  return client.schema("app");
+}
+
 function serializeCookie(name: string, value: string, options: CookieOptions) {
   const opt = {
     path: "/",

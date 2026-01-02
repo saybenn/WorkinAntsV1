@@ -2,7 +2,7 @@
 import type { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 import { site as siteStatic } from "../lib/siteConfig";
-import { supabase } from "@/lib/supabaseClient";
+import { supabaseServerClient } from "@/lib/supabase/server";
 
 import ExplainerSplit from "../components/home/ExplainerSplit";
 import FeaturedTabs from "../components/home/FeaturedTabs";
@@ -195,8 +195,13 @@ function mapRowToCard(row: ProviderServiceRow): ListingCardData | null {
 
 // ---------- SSR: one basket, split by kind ----------
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
+export const getServerSideProps: GetServerSideProps<HomeProps> = async (
+  ctx
+) => {
+  const supabase = supabaseServerClient(ctx);
+
   const { data, error } = await supabase
+    .schema("app")
     .from("provider_services")
     .select(
       `

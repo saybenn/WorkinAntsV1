@@ -1,6 +1,6 @@
 // components/roles/provider/Orders.jsx
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 import Card from "@/components/ui/Card";
 import { money } from "@/lib/format";
 

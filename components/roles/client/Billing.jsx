@@ -1,7 +1,7 @@
 import Card from "@/components/ui/Card";
 import EmptyState from "@/components/ui/EmptyState";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 import { money } from "@/lib/format";
 import Link from "next/link";
 

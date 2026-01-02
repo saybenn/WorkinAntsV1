@@ -12,6 +12,7 @@ import ReviewsTab from "@/components/profile/ReviewsTab";
 import ResumeTab from "@/components/profile/ResumeTab";
 import AboutTab from "@/components/profile/AboutTab";
 import BottomBar from "@/components/profile/BottomBar";
+import { appDb } from "@/lib/supabase/client";
 
 // ---------- SSR: public profile ----------
 export async function getServerSideProps(ctx) {
@@ -160,8 +161,7 @@ export default function PublicProfile({ initialProfile }) {
     setSaving(true);
     setBannerMsg("");
     try {
-      const { error } = await supabase
-        .schema("app")
+      const { error } = await appDb
         .from("profiles")
         .update({ full_name: draftName || null, bio: draftBio || null })
         .eq("id", initialProfile.id)

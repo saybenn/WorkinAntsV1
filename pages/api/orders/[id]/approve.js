@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/lib/supabaseServer";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 // import stripe from "@/lib/stripe";
 import { getSessionUser } from "@/lib/session";
 

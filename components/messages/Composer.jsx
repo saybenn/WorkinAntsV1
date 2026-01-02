@@ -1,5 +1,5 @@
 // components/messages/Composer.jsx
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 import { useState } from "react";
 
 export default function Composer({ threadId }) {

@@ -1,6 +1,6 @@
 // components/roles/candidate/Jobs.jsx
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 
 export default function CandidateJobs() {
   const [jobs, setJobs] = useState([]);

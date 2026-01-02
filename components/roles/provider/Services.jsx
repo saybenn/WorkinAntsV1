@@ -1,6 +1,6 @@
 // /components/roles/provider/Services.jsx
 import { useEffect, useMemo, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 
 function slugify(s = "") {
   return s

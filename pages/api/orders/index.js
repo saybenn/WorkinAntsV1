@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/lib/supabaseServer"; // service role key
+import { supabaseAdmin } from "@/lib/supabase/admin"; // service role key
 import { getSessionUser } from "@/lib/session"; // your helper
 
 export default async function handler(req, res) {

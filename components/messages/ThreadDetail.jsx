@@ -1,6 +1,6 @@
 // components/messages/ThreadDetail.jsx
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 
 export default function ThreadDetail({ threadId }) {
   const [msgs, setMsgs] = useState([]);

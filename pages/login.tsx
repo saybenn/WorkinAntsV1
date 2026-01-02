@@ -1,6 +1,6 @@
 import { type FormEvent, useMemo, useState } from "react";
 import { useRouter } from "next/router";
-import { supabaseBrowserClient } from "@/lib/supabase/browser";
+import { supabase } from "@/lib/supabase/client";
 
 type Mode = "magic_link" | "password";
 
@@ -8,10 +8,9 @@ export default function LoginPage() {
   const router = useRouter();
   const next = useMemo(() => {
     const n = router.query.next;
-    return typeof n === "string" && n.startsWith("/") ? n : "/";
+    const fallback = "/post-auth";
+    return typeof n === "string" && n.startsWith("/") ? n : fallback;
   }, [router.query.next]);
-
-  const supabase = useMemo(() => supabaseBrowserClient(), []);
 
   const [mode, setMode] = useState<Mode>("magic_link");
   const [email, setEmail] = useState("");

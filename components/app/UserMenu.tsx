@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { supabaseBrowserClient } from "@/lib/supabase/browser";
+import { supabase } from "@/lib/supabase/client";
 
 export default function UserMenu() {
-  const supabase = supabaseBrowserClient();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 

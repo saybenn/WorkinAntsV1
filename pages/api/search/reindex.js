@@ -1,5 +1,5 @@
 // /pages/api/search/reindex.js
-import { supabaseAdmin, appAdmin } from "@/lib/supabaseServer";
+import { supabaseAdmin, appAdmin } from "@/lib/supabase/admin";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();

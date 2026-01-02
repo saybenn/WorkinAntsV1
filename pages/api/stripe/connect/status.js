@@ -1,5 +1,5 @@
 // Stripe Connect status for the current provider
-import { supabaseAdmin } from "@/lib/supabaseServer";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getSessionUser } from "@/lib/session";
 
 export default async function handler(req, res) {

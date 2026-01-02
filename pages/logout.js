@@ -1,7 +1,7 @@
 // /pages/logout.js
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/lib/supabase/client";
 
 const DRAFT_KEY = "onboarding_state_v1";
 
