@@ -29,6 +29,6 @@
   "meta": {
     "title": "Working Ants — Provider-first marketplace",
     "description": "StyleSeat-like booking + Fiverr-like digital tiers. Provider-centric flows only.",
-    "url": "http://localhost:3000"
+    "url": "https://workin-ants-v1.vercel.app/"
   }
 }
